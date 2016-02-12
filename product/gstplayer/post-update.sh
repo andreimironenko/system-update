@@ -2,13 +2,13 @@
 
 printf "%s\n" "Post-update script"
 
-printf "%s" "Check /etc/hanover.conf ... "
-if [ ! -f /etc/hanover.conf ] ; then
+printf "%s" "Check /etc/product.conf ... "
+if [ ! -f /etc/product.conf ] ; then
 	printf "%s\n" "Failed"
-	printf "%s\n" "/etc/hanover.conf is not found!"
-	exit $EXIT_FAIL_HANOVER_CONF
+	printf "%s\n" "/etc/product.conf is not found!"
+	exit $EXIT_FAIL_PRODUCT_CONF
 fi	
-source /etc/hanover.conf
+source /etc/product.conf
 printf "%s\n" "Ok"
 
 printf "%s" "Check /etc/update.conf ... "
@@ -58,7 +58,7 @@ function exit_handler ()
 		;;
 	
 		EXIT_FAIL_NO_UPDATE_CONF   | \
-		EXIT_FAIL_NO_HANOVER_CONF  | \
+		EXIT_FAIL_NO_PRODUCT_CONF  | \
 		EXIT_FAIL_NFS_MOUNT)
 			echo "${_exit_status}" > $POST_UPDATE_RESULT_FILE
 			echo ${exit_msg} > $POST_UPDATE_RESULT_MSG
@@ -75,37 +75,6 @@ export -f exit_handler
 
 #Declare exit handler
 trap exit_handler EXIT
-
-printf "%s" "Check the presence of /etc/update.conf ... "
-if [ ! -f /etc/update.conf ] ; then
-	printf "%s\n" "Failed"
-	exit $EXIT_FAIL_NO_UPDATE_CONF
-fi
-printf "%s\n" "Ok" 
-source /etc/update.conf
-
-printf "%s" "Check the presence of /etc/hanover.conf ... "
-if [ ! -f /etc/hanover.conf ] ; then
-	printf "%s\n" "Failed"
-	exit $EXIT_FAIL_NO_HANOVER_CONF 
-fi
-printf "%s\n" "Ok"	
-source /etc/hanover.conf
-
-printf "%s" "Restoring /etc/tftmode.conf ... "
-if [ -z $TFTMODE ] ; then
-	TFTMODE="0"
-fi
-echo "$TFTMODE" > /etc/tftmode.conf
-printf "%s\n" "Ok"
-
-printf "%s" "Restoring $CHANNEL_X ... "
-touch $CHANNEL_X
-printf "%s\n" "Ok"
-
-printf "%s" "Starting IPTFT applications ... "
-execute /etc/init.d/tftmode.sh
-printf "%s\n" "Ok"
 
 printf "%s" "Removing temproary file $UPDATEVARS_CONF ... "
 rm $UPDATEVARS_CONF
